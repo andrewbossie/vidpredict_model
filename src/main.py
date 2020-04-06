@@ -59,7 +59,7 @@ def main(do_import=True):
         tmpMatrix = importer.getPixelMatrix('../images/raw_data/' + str(filename) + ".jpg")
         tmpMatrix = tmpMatrix[:, :, 0]
         print("Saving pixel matrix...")
-        np.savetxt('tmp.txt', tmpMatrix, fmt='%i', delimiter=',')
+        # np.savetxt('tmp.txt', tmpMatrix, fmt='%i', delimiter=',')
         print("tmpMatrix for {} Shape: {}".format(str(filename) + ".jpg", tmpMatrix.shape))
         imageTensor.append(tmpMatrix)
         
