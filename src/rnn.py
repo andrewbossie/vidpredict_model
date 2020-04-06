@@ -78,71 +78,70 @@ class RNN(object):
     #-----------------
     def train_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart):
         
-        if restart == True:
+        # if restart == True:
             
-            # print("x value: {}".format(x))
-            
-            # If we have iterated across x-axis (tensor.shape[0] - 1)
-            if x == 5:
-            # if x == tensor.shape[0] - 1:
-                final_average = (running_total / num_loops) * 100
-                print("Final Average: {:.2f}".format(final_average))
-                return
-            
-            tmp_x_batch = []
-            tmp_y_batch = []
+        # print("x value: {}".format(x))
+        
+        # If we have iterated across x-axis (tensor.shape[0] - 1)
+        if x == 5:
+        # if x == tensor.shape[0] - 1:
+            final_average = (running_total / num_loops) * 100
+            return final_average
+        
+        tmp_x_batch = []
+        tmp_y_batch = []
 
-            for i in range(y, y + batch_length):
-                
-                # If we have iterated across the y-axis
-                if i == tensor.shape[1]:
-                    x = x + 1
-                    # reset index
-                    i &= 0
-                    y = 0
-                    restart = True
-                    break
-                
-                else:
-                    y = i
-                    
-                # print("i value: {}".format(i))
-                # print("y value: {}".format(y))
-                # print("x value: {}".format(x))
-                                
-                # pixel "string" & scale
-                # print("Training on coordinates: ({}, {})".format(x,y))
-                pixel_string = importer.extractPixelStrings(tensor, x, y)
-                
-                x_train = pixel_string[:split-1]
-                y_train = pixel_string[split]
-                x_test = pixel_string[:split+1]
-                y_test = pixel_string[split+2:]
-                    
-                timesteps = len(x_train)
-                
-                # One-hot everyone
-                encoded_y = self.encode(y_train)
-                
-                x_train = x_train.reshape(len(x_train),1)
-                encoded_y = np.array(encoded_y).reshape(len(encoded_y))
-                print("Expected output: {}".format(y_train))
-                
-                tmp_x_batch.append(x_train)
-                tmp_y_batch.append(encoded_y)
-                    
-            # Train / test and loop back
-            epochs = 1
-            tmp_x_batch = np.array(tmp_x_batch)
-            tmp_y_batch = np.array(tmp_y_batch)
+        for i in range(y, y + batch_length):
             
-            trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+            # If we have iterated across the y-axis
+            if i == tensor.shape[1]:
+                x = x + 1
+                # reset index
+                i &= 0
+                y = 0
+                restart = True
+                break
+            
+            else:
+                y = i
+                
+            # print("i value: {}".format(i))
+            # print("y value: {}".format(y))
+            # print("x value: {}".format(x))
+                            
+            # pixel "string" & scale
+            # print("Training on coordinates: ({}, {})".format(x,y))
+            pixel_string = importer.extractPixelStrings(tensor, x, y)
+            
+            x_train = pixel_string[:split-1]
+            y_train = pixel_string[split]
+            # x_test = pixel_string[:split+1]
+            # y_test = pixel_string[split+2:]
+                
+            timesteps = len(x_train)
+            
+            # One-hot everyone
+            encoded_y = self.encode(y_train)
+            
+            x_train = x_train.reshape(len(x_train),1)
+            encoded_y = np.array(encoded_y).reshape(len(encoded_y))
             print("Expected output: {}".format(y_train))
-            del tmp_x_batch
-            del tmp_y_batch
-            num_loops = num_loops + 1
-            running_total = np.mean(trained.history['acc'])
-            self.train_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart)
+            
+            tmp_x_batch.append(x_train)
+            tmp_y_batch.append(encoded_y)
+                
+        # Train / test and loop back
+        epochs = 1
+        tmp_x_batch = np.array(tmp_x_batch)
+        tmp_y_batch = np.array(tmp_y_batch)
+        
+        trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+        print("Expected output: {}".format(y_train))
+        del tmp_x_batch
+        del tmp_y_batch
+        num_loops = num_loops + 1
+        running_total = running_total + trained.history['acc'][0]
+        return self.train_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart)
             
     #------------------------------------------------
     # Encode y_hat value into one hot (np.array(255))
