@@ -78,7 +78,6 @@ class RNN(object):
     #-----------------
     def train_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart):
         
-        # restart = True
         if restart == True:
             
             # print("x value: {}".format(x))
@@ -123,7 +122,7 @@ class RNN(object):
                 timesteps = len(x_train)
                 
                 # One-hot everyone
-                encoded_y = encode(y_train)
+                encoded_y = self.encode(y_train)
                 
                 x_train = x_train.reshape(len(x_train),1)
                 encoded_y = np.array(encoded_y).reshape(len(encoded_y))
@@ -137,13 +136,13 @@ class RNN(object):
             tmp_x_batch = np.array(tmp_x_batch)
             tmp_y_batch = np.array(tmp_y_batch)
             
-            trained = trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+            trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
             print("Expected output: {}".format(y_train))
             del tmp_x_batch
             del tmp_y_batch
             num_loops = num_loops + 1
             running_total = np.mean(trained.history['acc'])
-            train_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart)
+            self.train_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart)
             
     #------------------------------------------------
     # Encode y_hat value into one hot (np.array(255))

@@ -90,7 +90,6 @@ def main(do_import=True):
     model.summary()
     
     print("Done.")
-
     print("Starting main training loop...")
 
     x = 0
@@ -98,10 +97,11 @@ def main(do_import=True):
     num_loops = 0
     running_total = 0
     batch_length = 1000
+    restart = True
     
     # Extract pixel strings and train
     start = time.perf_counter()
-    rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, True)
+    rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
     # print("Average Score: {}".format(final_average))
     print("Training Complete.")
     end = time.perf_counter()
@@ -121,98 +121,6 @@ def main(do_import=True):
 # Visualizations
 #-----------------
 
-# #------------------
-# # Taining loop. Recursive
-# # Grabs batch_length pixel strings at a time and trains on them
-# # Loop over tensor[i]'s xy-coordinates and
-# # extract pixel strings from tensor
-# # Feed into RNN for each xy
-# # Batch Size: 10000
-# #-----------------
-# def _train_loop(rnn, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart):
-    
-#     # restart = True
-#     if restart == True:
-        
-#         # print("x value: {}".format(x))
-        
-#         # If we have iterated across x-axis (tensor.shape[0] - 1)
-#         # if x == 5:
-#         if x == tensor.shape[0] - 1:
-#             final_average = (running_total / num_loops) * 100
-#             print("Final Average: {:.2f}".format(final_average))
-#             return
-        
-#         tmp_x_batch = []
-#         tmp_y_batch = []
-
-#         for i in range(y, y + batch_length):
-            
-#             # If we have iterated across the y-axis
-#             if i == tensor.shape[1]:
-#                 x = x + 1
-#                 # reset index
-#                 i &= 0
-#                 y = 0
-#                 restart = True
-#                 break
-            
-#             else:
-#                 y = i
-                
-#             # print("i value: {}".format(i))
-#             # print("y value: {}".format(y))
-#             # print("x value: {}".format(x))
-                            
-#             # pixel "string" & scale
-#             # print("Training on coordinates: ({}, {})".format(x,y))
-#             pixel_string = importer.extractPixelStrings(tensor, x, y)
-            
-#             x_train = pixel_string[:split-1]
-#             y_train = pixel_string[split]
-#             x_test = pixel_string[:split+1]
-#             y_test = pixel_string[split+2:]
-                
-#             timesteps = len(x_train)
-            
-#             # One-hot everyone
-#             encoded_y = encode(y_train)
-            
-#             x_train = x_train.reshape(len(x_train),1)
-#             encoded_y = np.array(encoded_y).reshape(len(encoded_y))
-#             print("Expected output: {}".format(y_train))
-            
-#             tmp_x_batch.append(x_train)
-#             tmp_y_batch.append(encoded_y)
-                
-#         # Train / test and loop back
-#         epochs = 1
-#         tmp_x_batch = np.array(tmp_x_batch)
-#         tmp_y_batch = np.array(tmp_y_batch)
-        
-#         trained = rnn.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
-#         print("Expected output: {}".format(y_train))
-#         del tmp_x_batch
-#         del tmp_y_batch
-#         num_loops = num_loops + 1
-#         running_total = np.mean(trained.history['acc'])
-#         _train_loop(rnn, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart)
-
-# #------------------------------------------------
-# # Encode y_hat value into one hot (np.array(255))
-# #------------------------------------------------
-# def encode(number):
-#     encoded_array = []
-    
-#     for i in range(257):
-#         if i != number:
-#             encoded_array.append(0)
-#         else:
-#             encoded_array.append(1)
-            
-#     return encoded_array
-            
-            
             
 if __name__== "__main__":
     if sys.argv[1] == 'import':
