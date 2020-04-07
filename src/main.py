@@ -97,7 +97,10 @@ def main(do_import=True):
     batch_length = 1000
     restart = True
     
-    # Extract pixel strings and train
+#-----------------
+# Test
+#-----------------
+
     train_start = time.perf_counter()
     final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
     print("Average Training Score: {:.2f}%".format(final_average))
