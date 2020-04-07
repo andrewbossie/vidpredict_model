@@ -102,7 +102,7 @@ def main(do_import=True):
     # Extract pixel strings and train
     start = time.perf_counter()
     final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
-    print("Average Score: {:.2f}%".format(final_average))
+    print("Average Training Score: {:.2f}%".format(final_average))
     print("Training Complete.")
     end = time.perf_counter()
     print("Model trained in {:.2f} seconds.".format(end - start))
@@ -111,14 +111,20 @@ def main(do_import=True):
 #-----------------
 # Test
 #-----------------
-    # _test_loop(rnn, model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, True)
+
+    start = time.perf_counter()
+    final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
+    print("Average Testing Score: {:.2f}%".format(final_average))
+    print("Testing Complete.")
+    end = time.perf_counter()
+    print("Model tested in {:.2f} seconds.".format(end - start))
     
 #-----------------
-# Metrics
+# Testing Metrics
 #-----------------
 
 #-----------------
-# Visualizations
+# Testing Visualizations
 #-----------------
 
 #-----------------

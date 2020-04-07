@@ -93,8 +93,8 @@ class RNN(object):
 
         for i in range(y, y + batch_length):
             
-            # If we have iterated across the y-axis
-            if i == tensor.shape[1]:
+            # If we have iterated across the y-axis - split
+            if i == tensor.shape[1] - split:
                 x = x + 1
                 # reset index
                 i &= 0
@@ -113,8 +113,8 @@ class RNN(object):
             # print("Training on coordinates: ({}, {})".format(x,y))
             pixel_string = importer.extractPixelStrings(tensor, x, y)
             
-            x_train = pixel_string[:split-1]
-            y_train = pixel_string[split]
+            x_train = pixel_string[:-1]
+            y_train = pixel_string[-1:]
             # x_test = pixel_string[:split+1]
             # y_test = pixel_string[split+2:]
                 
