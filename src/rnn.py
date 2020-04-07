@@ -94,7 +94,7 @@ class RNN(object):
         for i in range(y, y + batch_length):
             
             # If we have iterated across the y-axis - split
-            if i == tensor.shape[1] - split:
+            if i == split - 1:
                 x = x + 1
                 # reset index
                 i &= 0

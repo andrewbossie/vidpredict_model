@@ -75,12 +75,10 @@ def main(do_import=True):
     # RNN construction
     print("Building RNN...")
     
-    string_len = imageTensor.shape[2]
+    split_len = imageTensor.shape[0]
     
     # Split entire data set (66/33)
-    split = int(np.ceil(string_len - (string_len * 0.33)))
-    
-    # Now lets split the training data into managable chunks (split / 10)
+    split = int(np.ceil(split_len * 0.33))
 
     # Input Dim: 1 x len(pixel string) : imageTensor.shape[2] x 1 (samples:timesteps:features)
     # Output Dim: 255
@@ -100,24 +98,23 @@ def main(do_import=True):
     restart = True
     
     # Extract pixel strings and train
-    start = time.perf_counter()
+    train_start = time.perf_counter()
     final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
     print("Average Training Score: {:.2f}%".format(final_average))
     print("Training Complete.")
-    end = time.perf_counter()
-    print("Model trained in {:.2f} seconds.".format(end - start))
-    exit()
+    train_end = time.perf_counter()
+    print("Model trained in {:.2f} seconds.".format(train_end - train_start))
     
 #-----------------
 # Test
 #-----------------
 
-    start = time.perf_counter()
+    test_start = time.perf_counter()
     final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
     print("Average Testing Score: {:.2f}%".format(final_average))
     print("Testing Complete.")
-    end = time.perf_counter()
-    print("Model tested in {:.2f} seconds.".format(end - start))
+    test_end = time.perf_counter()
+    print("Model tested in {:.2f} seconds.".format(test_end - test_start))
     
 #-----------------
 # Testing Metrics
