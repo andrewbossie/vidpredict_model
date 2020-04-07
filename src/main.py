@@ -122,6 +122,9 @@ def main(do_import=True):
 #-----------------
 # Testing Metrics
 #-----------------
+    # AUC
+    # F1
+    # Confusion Matrix
 
 #-----------------
 # Testing Visualizations
