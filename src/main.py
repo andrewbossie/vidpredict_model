@@ -84,7 +84,7 @@ def main(do_import=True):
     # Output Dim: 255
     # Output: descrete scalar value 0 < x < 255
     rnn = RNN()
-    model = rnn.buildRNN(split-1, 1, 1)
+    model = rnn.buildRNN(imageTensor.shape[2], 1, 1)
     model.summary()
     
     print("Done.")
