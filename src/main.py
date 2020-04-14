@@ -79,12 +79,13 @@ def main(do_import=True):
     
     # Split entire data set (66/33)
     split = int(np.ceil(split_len * 0.33))
+    print("Split value: {}".format(split))
 
     # Input Dim: 1 x len(pixel string) : imageTensor.shape[2] x 1 (samples:timesteps:features)
     # Output Dim: 255
     # Output: descrete scalar value 0 < x < 255
     rnn = RNN()
-    model = rnn.buildRNN(imageTensor.shape[2], 1, 1)
+    model = rnn.buildRNN(imageTensor.shape[2]-1, 1, 1)
     model.summary()
     
     print("Done.")
@@ -101,9 +102,25 @@ def main(do_import=True):
 # Test
 #-----------------
 
+    method = 'Train'
+    
+    # Split image tensor into train tensor
+    train_tensor = imageTensor[:-split][:][:]
     train_start = time.perf_counter()
-    final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
-    print("Average Training Score: {:.2f}%".format(final_average))
+    
+    training_average = rnn.train_test_loop(model, 
+                                           importer, 
+                                           train_tensor, 
+                                           x, 
+                                           y, 
+                                           split, 
+                                           running_total, 
+                                           num_loops, 
+                                           batch_length, 
+                                           restart, 
+                                           method)
+    
+    print("Average Training Score: {:.2f}%".format(training_average))
     print("Training Complete.")
     train_end = time.perf_counter()
     print("Model trained in {:.2f} seconds.".format(train_end - train_start))
@@ -112,9 +129,25 @@ def main(do_import=True):
 # Test
 #-----------------
 
+    method = 'Test'
+    
+    # Split image tensor into test tensor
+    train_tensor = imageTensor[-split+1:][:][:]
     test_start = time.perf_counter()
-    final_average = rnn.train_loop(model, importer, imageTensor, x, y, split, running_total, num_loops, batch_length, restart)
-    print("Average Testing Score: {:.2f}%".format(final_average))
+    
+    testing_average = rnn.train_test_loop(model, 
+                                          importer, 
+                                          train_tensor, 
+                                          x, 
+                                          y, 
+                                          split, 
+                                          running_total, 
+                                          num_loops, 
+                                          batch_length, 
+                                          restart, 
+                                          method)
+    
+    print("Average Testing Score: {:.2f}%".format(testing_average))
     print("Testing Complete.")
     test_end = time.perf_counter()
     print("Model tested in {:.2f} seconds.".format(test_end - test_start))

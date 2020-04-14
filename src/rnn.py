@@ -60,7 +60,7 @@ class RNN(object):
                                                                   verbose=1, 
                                                                   save_best_only=False, 
                                                                   mode='auto', 
-                                                                  save_freq=1)
+                                                                  save_freq=2)
         
         model.compile(loss='mse', optimizer='adam', metrics=['acc'])
         trained_rnn = model.fit(train_x, train_y, epochs=epochs,callbacks=[save_callback])
@@ -69,22 +69,17 @@ class RNN(object):
         return trained_rnn
     
     #------------------
-    # Taining loop. Recursive
+    # Taining / Testing loop. Recursive
     # Grabs batch_length pixel strings at a time and trains on them
     # Loop over tensor[i]'s xy-coordinates and
     # extract pixel strings from tensor
     # Feed into RNN for each xy
     # Batch Size: 10000
     #-----------------
-    def train_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart):
-        
-        # if restart == True:
-            
-        # print("x value: {}".format(x))
+    def train_test_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
         
         # If we have iterated across x-axis (tensor.shape[0] - 1)
-        if x == 5:
-        # if x == tensor.shape[0] - 1:
+        if x == tensor.shape[0] - 2:
             final_average = (running_total / num_loops) * 100
             return final_average
         
@@ -94,7 +89,7 @@ class RNN(object):
         for i in range(y, y + batch_length):
             
             # If we have iterated across the y-axis - split
-            if i == split - 1:
+            if i == tensor.shape[1] - 2:
                 x = x + 1
                 # reset index
                 i &= 0
@@ -105,18 +100,16 @@ class RNN(object):
             else:
                 y = i
                 
-            # print("i value: {}".format(i))
-            # print("y value: {}".format(y))
-            # print("x value: {}".format(x))
+            print("i value: {}".format(i))
+            print("y value: {}".format(y))
+            print("x value: {}".format(x))
                             
             # pixel "string" & scale
-            # print("Training on coordinates: ({}, {})".format(x,y))
+            print("{}ing on coordinates: ({}, {})".format(method, x,y))
             pixel_string = importer.extractPixelStrings(tensor, x, y)
             
             x_train = pixel_string[:-1]
             y_train = pixel_string[-1:]
-            # x_test = pixel_string[:split+1]
-            # y_test = pixel_string[split+2:]
                 
             timesteps = len(x_train)
             
@@ -141,7 +134,7 @@ class RNN(object):
         del tmp_y_batch
         num_loops = num_loops + 1
         running_total = running_total + trained.history['acc'][0]
-        return self.train_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart)
+        return self.train_test_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method)
             
     #------------------------------------------------
     # Encode y_hat value into one hot (np.array(255))
