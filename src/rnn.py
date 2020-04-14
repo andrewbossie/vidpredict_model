@@ -68,6 +68,12 @@ class RNN(object):
             
         return trained_rnn
     
+    def testRNN(self, model, epochs, timesteps, train_x, train_y):
+        
+        tested_rnn = model.fit(train_x, train_y)
+            
+        return tested_rnn
+    
     #------------------
     # Taining / Testing loop. Recursive
     # Grabs batch_length pixel strings at a time and trains on them
@@ -128,8 +134,11 @@ class RNN(object):
         tmp_x_batch = np.array(tmp_x_batch)
         tmp_y_batch = np.array(tmp_y_batch)
         
-        trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
-        print("Expected output: {}".format(y_train))
+        if method == 'Train':
+            trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+        else:
+            tested = self.testRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+        
         del tmp_x_batch
         del tmp_y_batch
         num_loops = num_loops + 1
