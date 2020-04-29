@@ -144,9 +144,79 @@ class RNN(object):
         num_loops = num_loops + 1
         running_total = running_total + trained.history['acc'][0]
         return self.train_test_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method)
+    
+    
+    #------------------
+    # Prediction. Recursive
+    # Given an input image,
+    # generate the next 3 images
+    # using trained model.
+    #-----------------
+    def predict_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
+        
+        # If we have iterated across x-axis (tensor.shape[0] - 1)
+        if x == tensor.shape[0] - 2:
+            final_average = (running_total / num_loops) * 100
+            return final_average
+        
+        tmp_x_batch = []
+        tmp_y_batch = []
+
+        for i in range(y, y + batch_length):
+            
+            # If we have iterated across the y-axis - split
+            if i == tensor.shape[1] - 2:
+                x = x + 1
+                # reset index
+                i &= 0
+                y = 0
+                restart = True
+                break
+            
+            else:
+                y = i
+                
+            print("i value: {}".format(i))
+            print("y value: {}".format(y))
+            print("x value: {}".format(x))
+                            
+            # pixel "string" & scale
+            print("{}ing on coordinates: ({}, {})".format(method, x,y))
+            pixel_string = importer.extractPixelStrings(tensor, x, y)
+            
+            x_train = pixel_string[:-1]
+            y_train = pixel_string[-1:]
+                
+            timesteps = len(x_train)
+            
+            # One-hot everyone
+            encoded_y = self.encode(y_train)
+            
+            x_train = x_train.reshape(len(x_train),1)
+            encoded_y = np.array(encoded_y).reshape(len(encoded_y))
+            print("Expected output: {}".format(y_train))
+            
+            tmp_x_batch.append(x_train)
+            tmp_y_batch.append(encoded_y)
+                
+        # Train / test and loop back
+        epochs = 1
+        tmp_x_batch = np.array(tmp_x_batch)
+        tmp_y_batch = np.array(tmp_y_batch)
+        
+        if method == 'Train':
+            trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+        else:
+            tested = self.testRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
+        
+        del tmp_x_batch
+        del tmp_y_batch
+        num_loops = num_loops + 1
+        running_total = running_total + trained.history['acc'][0]
+        return self.train_test_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method)
             
     #------------------------------------------------
-    # Encode y_hat value into one hot (np.array(255))
+    # Encode y value into one hot (np.array(255))
     #------------------------------------------------
     def encode(self, number):
         encoded_array = []
@@ -158,6 +228,15 @@ class RNN(object):
                 encoded_array.append(1)
                 
         return encoded_array
+    
+    #------------------------------------------------
+    # Decode y_hat (nparray) value into int 0 < x < 255
+    #------------------------------------------------
+    def encode(self, y_hat):
+        
+        final_value = ''
+                
+        return final_value
             
     def destroyRNN(self):
         keras.backend.clear_session()
