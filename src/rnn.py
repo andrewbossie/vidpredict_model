@@ -232,7 +232,7 @@ class RNN(object):
     #------------------------------------------------
     # Decode y_hat (nparray) value into int 0 < x < 255
     #------------------------------------------------
-    def encode(self, y_hat):
+    def decode(self, y_hat):
         
         final_value = ''
                 

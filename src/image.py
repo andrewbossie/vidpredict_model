@@ -71,8 +71,7 @@ class Image(object):
         im = PIL.Image.open(imageName)
         
         # Resize to common dimensions
-        image = im.resize(self.y, self.x)
-        exit()
+        im = im.resize((self.y, self.x))
             
         arr = np.array(im)
         

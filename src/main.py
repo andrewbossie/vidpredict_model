@@ -84,7 +84,6 @@ def main(do_import=True):
         split = int(np.ceil(split_len * 0.33))
         print("Split value: {}".format(split))
         print(imageTensor.shape)
-        exit()
 
         # Input Dim: 1 x len(pixel string) : imageTensor.shape[2] x 1 (samples:timesteps:features)
         # Output Dim: 255
