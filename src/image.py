@@ -33,7 +33,7 @@ class Image(object):
         success = True
         while success:
                 
-            cv2.imwrite("../images/raw_data/"+str(index)+".jpeg", image)
+            cv2.imwrite("../images/raw_data/"+str(index)+".jpg", image)
             success,image = video.read()
             index += 1
             if limit > 0:
@@ -71,7 +71,8 @@ class Image(object):
         im = PIL.Image.open(imageName)
         
         # Resize to common dimensions
-        image = im.resize(y, x, Image.ANTIALIAS)
+        image = im.resize(self.y, self.x)
+        exit()
             
         arr = np.array(im)
         

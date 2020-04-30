@@ -28,13 +28,14 @@ def main(do_import=True):
 
     # For files in in /video
     for filename in os.listdir('../video'):
-        importer = Image(filename)
+        
+        importer = Image('../video/' + filename)
         
         if(do_import == True):
             print("Importing video file...")
             
             # Grab individual frames from video (limit 0 = all frames)
-            importer.extractFrames(limit=10) 
+            importer.extractFrames(limit=0) 
             print("Done.")   
         
     # ----------------------------------
@@ -58,11 +59,11 @@ def main(do_import=True):
         for filename in sorted_keys:
 
             # Extract pixel matrices
-            tmpMatrix = importer.getPixelMatrix('../images/raw_data/' + str(filename) + ".jpeg")
+            tmpMatrix = importer.getPixelMatrix('../images/raw_data/' + str(filename) + ".jpg")
             tmpMatrix = tmpMatrix[:, :, 0]
             print("Saving pixel matrix...")
             # np.savetxt('tmp.txt', tmpMatrix, fmt='%i', delimiter=',')
-            print("tmpMatrix for {} Shape: {}".format(str(filename) + ".jpeg", tmpMatrix.shape))
+            print("tmpMatrix for {} Shape: {}".format(str(filename) + ".jpg", tmpMatrix.shape))
             imageTensor.append(tmpMatrix)
             
         # Dump 3-d Image Tensor into a csv
