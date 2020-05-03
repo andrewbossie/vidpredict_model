@@ -101,7 +101,13 @@ class Image(object):
         return pixelString
     
         
+    #  From a pixel array, convert to bmp image and save into
+    # images/predicted_data
     def arrayToImage(self, pixelArray):
-        self.pixelArray = pixelArray
+        
+        im = PIL.Image.fromarray(pixelArray)
+        im.save('../images/predicted_data.bmp')
+        
+        return True
     
     

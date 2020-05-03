@@ -53,6 +53,8 @@ class RNN(object):
             
         return rnn
     
+    # Train Function
+    # If trained model is available, load weights
     def trainRNN(self, model, epochs, timesteps, train_x, train_y):
         
         save_callback = ModelCheckpoint('../saved_models/trained.hdf5', 
@@ -68,11 +70,19 @@ class RNN(object):
             
         return trained_rnn
     
+    # Test Function (Probably wont use)
     def testRNN(self, model, epochs, timesteps, train_x, train_y):
         
         tested_rnn = model.fit(train_x, train_y)
             
         return tested_rnn
+    
+    # Predict Function
+    def predictRNN(self, model, pixel_value):
+        
+        y_hat = model.predict(pixel_value)
+            
+        return y_hat
     
     #------------------
     # Taining / Testing loop. Recursive
@@ -147,73 +157,20 @@ class RNN(object):
     
     
     #------------------
-    # Prediction. Recursive
+    # Prediction.
     # Given an input image,
-    # generate the next 3 images
+    # generate the next image
     # using trained model.
     #-----------------
-    def predict_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
+    def predict_loop(self, model, x, y, test_image_tensor):
         
-        # If we have iterated across x-axis (tensor.shape[0] - 1)
-        if x == tensor.shape[0] - 2:
-            final_average = (running_total / num_loops) * 100
-            return final_average
-        
-        tmp_x_batch = []
-        tmp_y_batch = []
+        predicted_tensor = []
 
-        for i in range(y, y + batch_length):
-            
-            # If we have iterated across the y-axis - split
-            if i == tensor.shape[1] - 2:
-                x = x + 1
-                # reset index
-                i &= 0
-                y = 0
-                restart = True
-                break
-            
-            else:
-                y = i
-                
-            print("i value: {}".format(i))
-            print("y value: {}".format(y))
-            print("x value: {}".format(x))
-                            
-            # pixel "string" & scale
-            print("{}ing on coordinates: ({}, {})".format(method, x,y))
-            pixel_string = importer.extractPixelStrings(tensor, x, y)
-            
-            x_train = pixel_string[:-1]
-            y_train = pixel_string[-1:]
-                
-            timesteps = len(x_train)
-            
-            # One-hot everyone
-            encoded_y = self.encode(y_train)
-            
-            x_train = x_train.reshape(len(x_train),1)
-            encoded_y = np.array(encoded_y).reshape(len(encoded_y))
-            print("Expected output: {}".format(y_train))
-            
-            tmp_x_batch.append(x_train)
-            tmp_y_batch.append(encoded_y)
-                
-        # Train / test and loop back
-        epochs = 1
-        tmp_x_batch = np.array(tmp_x_batch)
-        tmp_y_batch = np.array(tmp_y_batch)
+        for i in range(y):
+            for j in range(x):
+                predicted_tensor[j][i] = model.predictRNN(test_image_tensor[j][i])
         
-        if method == 'Train':
-            trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
-        else:
-            tested = self.testRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
-        
-        del tmp_x_batch
-        del tmp_y_batch
-        num_loops = num_loops + 1
-        running_total = running_total + trained.history['acc'][0]
-        return self.train_test_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method)
+        return predicted_tensor
             
     #------------------------------------------------
     # Encode y value into one hot (np.array(255))
@@ -234,12 +191,9 @@ class RNN(object):
     #------------------------------------------------
     def decode(self, y_hat):
         
-        final_value = ''
+        final_value = y_hat.index(1) - 1
                 
         return final_value
             
     def destroyRNN(self):
         keras.backend.clear_session()
-        
-    def predictFrame(self, x):
-        self.x = x

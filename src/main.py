@@ -18,6 +18,7 @@ import time
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
+import boto3
 
 # Program starts here
 def main(do_import=True):
@@ -25,6 +26,9 @@ def main(do_import=True):
 #----------------------------------
 # Video import and image extraction
 #----------------------------------
+
+    # import all files from S3
+    
 
     # For files in in /video
     for filename in os.listdir('../video'):
@@ -35,7 +39,7 @@ def main(do_import=True):
             print("Importing video file...")
             
             # Grab individual frames from video (limit 0 = all frames)
-            importer.extractFrames(limit=0) 
+            importer.extractFrames(limit=100) 
             print("Done.")   
         
     # ----------------------------------
@@ -171,7 +175,18 @@ def main(do_import=True):
     #-----------------
     # Predictions (TEST)
     #-----------------
-        # prediction = rnn.predict_loop()
+    
+        # Grab test image
+        test_image_location = "../images/test_images/"
+        
+        # Convert to image tensor
+        test_image_tensor = importer.getPixelMatrix(test_image_location)
+        
+        # Predict
+        prediction = rnn.predict_loop(rnn, 480, 640, test_image_tensor)
+        
+        # Convert predicted tensor to image and save
+        final_prediction = importer.arrayToImage(prediction)
         
 
 if __name__== "__main__":
