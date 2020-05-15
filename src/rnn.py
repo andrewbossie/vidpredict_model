@@ -55,7 +55,7 @@ class RNN(object):
     
     # Train Function
     # If trained model is available, load weights
-    def trainRNN(self, model, epochs, timesteps, train_x, train_y):
+    def trainRNN(self, model, epochs, train_x, train_y):
         
         save_callback = ModelCheckpoint('../saved_models/trained.hdf5', 
                                                                   monitor='loss', 
@@ -80,7 +80,9 @@ class RNN(object):
     # Predict Function
     def predictRNN(self, model, pixel_value):
         
-        y_hat = model.predict(pixel_value)
+        y_hat = model.predict(255)
+        print(y_hat)
+        exit()
             
         return y_hat
     
@@ -124,31 +126,42 @@ class RNN(object):
             print("{}ing on coordinates: ({}, {})".format(method, x,y))
             pixel_string = importer.extractPixelStrings(tensor, x, y)
             
-            x_train = pixel_string[:-1]
-            y_train = pixel_string[-1:]
+            # Find length of pixel string for pair pixels
+            modulo = len(pixel_string) % 2
+            max_len = len(pixel_string) - modulo
+            max_len = max_len - 1
+            
+            for k in range(max_len):
+            
+                x_train = pixel_string[k]
+                y_train = pixel_string[k+1]
+                print("K value: {}".format(k))
+                print("K+1 value: {}".format(k+1))
+                print("x_train value: {}".format(x_train))
+                print("y_train value: {}".format(y_train))
+                                    
+                # One-hot everyone
+                encoded_y = self.encode(y_train)
                 
-            timesteps = len(x_train)
-            
-            # One-hot everyone
-            encoded_y = self.encode(y_train)
-            
-            x_train = x_train.reshape(len(x_train),1)
-            encoded_y = np.array(encoded_y).reshape(len(encoded_y))
-            print("Expected output: {}".format(y_train))
-            
-            tmp_x_batch.append(x_train)
-            tmp_y_batch.append(encoded_y)
+                x_train = x_train.reshape(1,1,1)
+                encoded_y = np.array(encoded_y).reshape(-1 ,len(encoded_y))
+                print("Expected output: {}".format(y_train))
                 
-        # Train / test and loop back
-        epochs = 1
-        tmp_x_batch = np.array(tmp_x_batch)
-        tmp_y_batch = np.array(tmp_y_batch)
-        
-        if method == 'Train':
-            trained = self.trainRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
-        else:
-            tested = self.testRNN(model, epochs, timesteps, tmp_x_batch, tmp_y_batch)
-        
+                # tmp_x_batch.append(x_train)
+                # tmp_y_batch.append(encoded_y)
+                    
+                # Train / test and loop back
+                epochs = 1
+                # tmp_x_batch = np.array(tmp_x_batch)
+                # tmp_y_batch = np.array(tmp_y_batch)
+                
+                if method == 'Train':
+                    trained = self.trainRNN(model, epochs, x_train, encoded_y)
+                else:
+                    tested = self.testRNN(model, epochs, tmp_x_batch, tmp_y_batch)
+                    
+                k = k + 2
+                
         del tmp_x_batch
         del tmp_y_batch
         num_loops = num_loops + 1
@@ -168,7 +181,7 @@ class RNN(object):
 
         for i in range(y):
             for j in range(x):
-                predicted_tensor[j][i] = model.predictRNN(test_image_tensor[j][i])
+                predicted_tensor[j][i] = self.predictRNN(model, test_image_tensor[j][i])
         
         return predicted_tensor
             

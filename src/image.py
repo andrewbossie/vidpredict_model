@@ -106,7 +106,7 @@ class Image(object):
     def arrayToImage(self, pixelArray):
         
         im = PIL.Image.fromarray(pixelArray)
-        im.save('../images/predicted_data.bmp')
+        im.save('../images/predicted_data/test.bmp')
         
         return True
     

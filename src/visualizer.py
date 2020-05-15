@@ -12,7 +12,7 @@ import time
 import pandas as pd
 import numpy as np 
 
-# This is the main class for recurrent neural network
+# This is the vizualiation class for recurrent neural network
 class Visualizer(object):
     
     def __init__(self):

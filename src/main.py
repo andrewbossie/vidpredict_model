@@ -16,6 +16,7 @@ sys.setrecursionlimit(1000000)
 import gc
 import time
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 import boto3
@@ -93,7 +94,7 @@ def main(do_import=True):
         # Output Dim: 255
         # Output: descrete scalar value 0 < x < 255
         rnn = RNN()
-        model = rnn.buildRNN(imageTensor.shape[2]-1, 1, 1)
+        model = rnn.buildRNN(1, 1, 1)
         model.summary()
         
         print("Done.")
@@ -107,7 +108,7 @@ def main(do_import=True):
         restart = True
         
     #-----------------
-    # Test
+    # Train
     #-----------------
 
         method = 'Train'
@@ -177,13 +178,14 @@ def main(do_import=True):
     #-----------------
     
         # Grab test image
-        test_image_location = "../images/test_images/"
+        test_image_location = "../images/test_images/test.jpg"
         
         # Convert to image tensor
         test_image_tensor = importer.getPixelMatrix(test_image_location)
+        test_image_tensor = test_image_tensor[:, :, 0]
         
         # Predict
-        prediction = rnn.predict_loop(rnn, 480, 640, test_image_tensor)
+        prediction = rnn.predict_loop(model, 480, 640, test_image_tensor)
         
         # Convert predicted tensor to image and save
         final_prediction = importer.arrayToImage(prediction)
@@ -194,3 +196,5 @@ if __name__== "__main__":
         main(True)
     elif sys.argv[1] == 'noimport':
         main(False)
+    else:
+        print("Please provide import parameter")
