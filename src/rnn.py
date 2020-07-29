@@ -31,9 +31,9 @@ class RNN(object):
         physical_devices = tf.config.list_physical_devices('GPU') 
         print("Num GPUs:", len(physical_devices))
         
-        if(len(physical_devices) < 1):
-            print("No GPU found... Exiting.")
-            exit()
+        # if(len(physical_devices) < 1):
+        #     print("No GPU found... Exiting.")
+        #     exit()
         
         return None
     
@@ -100,38 +100,40 @@ class RNN(object):
     #-----------------
     def train_test_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
         
-        print(tensor.shape)
+        print(x, y)
         exit()
         
-        # If we have iterated across x-axis (tensor.shape[0] - 1)
-        if x == tensor.shape[0] - 2:
-            final_average = (running_total / num_loops) * 100
-            return final_average
+        # # If we have iterated across x-axis (tensor.shape[0] - 1)
+        # if x == tensor.shape[0] - 2:
+        #     final_average = (running_total / num_loops) * 100
+        #     return final_average
         
-        tmp_x_batch = []
-        tmp_y_batch = []
-
-        for i in range(y, y + batch_length):
+        # tmp_x_batch = []
+        # tmp_y_batch = []
+        
+        
+        for i in range(len(tensor.shape[2])):        
+        # for i in range(y, y + batch_length):
             
-            # If we have iterated across the y-axis - split
-            if i == tensor.shape[1] - 2:
-                x = x + 1
-                # reset index
-                i &= 0
-                y = 0
-                restart = True
-                break
+            # # If we have iterated across the y-axis - split
+            # if i == tensor.shape[1] - 2:
+            #     x = x + 1
+            #     # reset index
+            #     i &= 0
+            #     y = 0
+            #     restart = True
+            #     break
             
-            else:
-                y = i
+            # else:
+            #     y = i
                 
             print("i value: {}".format(i))
-            print("y value: {}".format(y))
-            print("x value: {}".format(x))
+            # print("y value: {}".format(y))
+            # print("x value: {}".format(x))
                             
-            # pixel "string" & scale
-            print("{}ing on coordinates: ({}, {})".format(method, x,y))
-            pixel_string = importer.extractPixelStrings(tensor, x, y)
+            # # pixel "string" & scale
+            # print("{}ing on coordinates: ({}, {})".format(method, x,y))
+            # pixel_string = importer.extractPixelStrings(tensor, x, y)
             
             # Find length of pixel string for pair pixels
             modulo = len(pixel_string) % 2
@@ -140,8 +142,8 @@ class RNN(object):
             
             for k in range(max_len):
             
-                x_train = pixel_string[k]
-                y_train = pixel_string[k+1]
+            #     x_train = pixel_string[k]
+            #     y_train = pixel_string[k+1]
                 print("K value: {}".format(k))
                 print("K+1 value: {}".format(k+1))
                 print("x_train value: {}".format(x_train))
@@ -151,8 +153,8 @@ class RNN(object):
                 encoded_y = self.encode(y_train)
                 
                 x_train = x_train.reshape(1,1,1)
-                encoded_y = np.array(encoded_y).reshape(-1 ,len(encoded_y))
-                print("Expected output: {}".format(y_train))
+                # encoded_y = np.array(encoded_y).reshape(-1 ,len(encoded_y))
+                # print("Expected output: {}".format(y_train))
                 
                 # tmp_x_batch.append(x_train)
                 # tmp_y_batch.append(encoded_y)
@@ -162,10 +164,10 @@ class RNN(object):
                 # tmp_x_batch = np.array(tmp_x_batch)
                 # tmp_y_batch = np.array(tmp_y_batch)
                 
-                if method == 'Train':
-                    trained = self.trainRNN(model, epochs, x_train, encoded_y)
-                else:
-                    tested = self.testRNN(model, epochs, tmp_x_batch, tmp_y_batch)
+            if method == 'Train':
+                trained = self.trainRNN(model, epochs, x_train, encoded_y)
+            else:
+                tested = self.testRNN(model, epochs, tmp_x_batch, tmp_y_batch)
                     
                 k = k + 2
                 
