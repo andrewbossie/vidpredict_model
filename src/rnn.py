@@ -31,6 +31,10 @@ class RNN(object):
         physical_devices = tf.config.list_physical_devices('GPU') 
         print("Num GPUs:", len(physical_devices))
         
+        if(len(physical_devices) < 1):
+            print("No GPU found... Exiting.")
+            exit()
+        
         return None
     
     # Build new neural network
@@ -95,6 +99,9 @@ class RNN(object):
     # Batch Size: 10000
     #-----------------
     def train_test_loop(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
+        
+        print(tensor.shape)
+        exit()
         
         # If we have iterated across x-axis (tensor.shape[0] - 1)
         if x == tensor.shape[0] - 2:

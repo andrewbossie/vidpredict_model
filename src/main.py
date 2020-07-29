@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Title: imageRNN
 # Author: Andrew Bossie
 # Copyright (C) Andrew Bossie - All Rights Reserved
@@ -83,18 +85,17 @@ def main(do_import=True):
         # RNN construction
         print("Building RNN...")
         
-        split_len = imageTensor.shape[0]
+        split_len = imageTensor.shape[2]
         
         # Split entire data set (66/33)
         split = int(np.ceil(split_len * 0.33))
         print("Split value: {}".format(split))
-        print(imageTensor.shape)
 
         # Input Dim: 1 x len(pixel string) : imageTensor.shape[2] x 1 (samples:timesteps:features)
         # Output Dim: 255
         # Output: descrete scalar value 0 < x < 255
         rnn = RNN()
-        model = rnn.buildRNN(1, 1, 1)
+        model = rnn.buildRNN(480, 640, 1)
         model.summary()
         
         print("Done.")
