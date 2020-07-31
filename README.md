@@ -20,15 +20,17 @@ Assumes python>=3
 Load video into /video. Set a limit value for the amount of images you'd like to extract from the video.
 
     python vidpredict.py
-    
+
 or
     
     python vidpredict.py noimport
 
 
 If you want to import a video files in /video run:
+
     python vidpredict.py import
 
 If you only want to predict based on trained weights:
+
     python vidpredict.py predict
 
