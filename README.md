@@ -1,7 +1,6 @@
 # VidPredict
-
-
-
+\
+\
 ## Description
 VidPredict combines an LSTM with individual video frames to predict out-of-network 
 images by modelling the temporal change of pixel values over time. 
@@ -21,16 +20,11 @@ Load video into /video. Set a limit value for the amount of images you'd like to
 
     python vidpredict.py
 
-or
     
-    python vidpredict.py noimport
+    args: 
+            noimport - Do not import any video data
 
+            import - Import video data from /video
 
-If you want to import a video files in /video run:
-
-    python vidpredict.py import
-
-If you only want to predict based on trained weights:
-
-    python vidpredict.py predict
+            predict - predict based on trained weights
 
