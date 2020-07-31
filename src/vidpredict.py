@@ -5,7 +5,7 @@
 # Copyright (C) Andrew Bossie - All Rights Reserved
 # Unauthorized copying of this file, via any medium is strictly prohibited
 # Proprietary and confidential
-# Written by Andrew Bossie <andrewbossie06@yahoo.com>, January 2020
+# Written by Andrew Bossie <andrewbossie06@yahoo.com>, July 2020
 
 from image import Image
 from rnn import RNN
