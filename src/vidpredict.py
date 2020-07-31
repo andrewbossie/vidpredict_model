@@ -7,9 +7,9 @@
 # Proprietary and confidential
 # Written by Andrew Bossie <andrewbossie06@yahoo.com>, July 2020
 
-from image import Image
-from rnn import RNN
-from visualizer import Visualizer
+from classes.image import Image
+from classes.rnn import RNN
+from classes.visualizer import Visualizer
 # from bayes import Bayes
 
 import os
@@ -68,7 +68,7 @@ def VidPredict(do_import=True):
         for filename in sorted_keys:
 
             # Extract pixel matrices
-            tmpMatrix = importer.getPixelMatrix('../images/raw_data/' + str(filename) + ".jpg")
+            tmpMatrix = importer.getPixelMatrix('../../images/raw_data/' + str(filename) + ".jpg")
             tmpMatrix = tmpMatrix[:, :, 0]
             print("Saving pixel matrix...")
             # np.savetxt('tmp.txt', tmpMatrix, fmt='%i', delimiter=',')
@@ -171,7 +171,7 @@ def VidPredict(do_import=True):
     #-----------------
     
         # Grab test image
-        pred_image_location = "../images/test_images/test.jpg"
+        pred_image_location = "../../images/test_images/test.jpg"
         
         # Convert to image tensor
         pred_image_tensor = importer.getPixelMatrix(pred_image_location)
@@ -209,7 +209,7 @@ def OneTimePredict(do_import=True):
     importer = Image()
 
     # Grab test image
-    pred_image_location = "../images/test_images/test.jpg"
+    pred_image_location = "../../images/test_images/test.jpg"
     
     # Convert to image tensor
     pred_image_tensor = importer.getPixelMatrix(pred_image_location)

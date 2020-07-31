@@ -50,11 +50,11 @@ class RNN(object):
         rnn.add(Dense(features, activation='relu'))
         
         # If model already exists
-        if path.exists('../saved_models/trained.hdf5'):
+        if path.exists('../../saved_models/trained.hdf5'):
             print('Existing model found, loading...')
 
             # Restore the weights
-            rnn.load_weights('../saved_models/trained.hdf5')
+            rnn.load_weights('../../saved_models/trained.hdf5')
             print('Done.')
             
         return rnn
@@ -71,11 +71,11 @@ class RNN(object):
         rnn.add(Dense(features, activation='relu'))
         
         # If model already exists
-        if path.exists('../saved_models/trained.hdf5'):
+        if path.exists('../../saved_models/trained.hdf5'):
             print('Existing model found, loading...')
 
             # Restore the weights
-            rnn.load_weights('../saved_models/trained.hdf5')
+            rnn.load_weights('../../saved_models/trained.hdf5')
             print('Done.')
         else:
             Print("Weights not present! Exiting.")
@@ -85,7 +85,7 @@ class RNN(object):
     # Train Function
     def trainRNN(self, model, epochs, train_x, train_y):
         
-        save_callback = ModelCheckpoint('../saved_models/trained.hdf5', 
+        save_callback = ModelCheckpoint('.././saved_models/trained.hdf5', 
                                                                   monitor='loss', 
                                                                   verbose=1, 
                                                                   save_best_only=False, 
