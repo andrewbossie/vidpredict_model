@@ -33,7 +33,7 @@ class Image(object):
         success = True
         while success:
                 
-            cv2.imwrite("../../images/raw_data/"+str(index)+".jpg", image)
+            cv2.imwrite("../images/raw_data/"+str(index)+".jpg", image)
             success,image = video.read()
             index += 1
             if limit > 0:
@@ -110,7 +110,7 @@ class Image(object):
         # Used for greyscale images only 
         im = im.convert("L")
         
-        im.save('../../images/predicted_data/test_'+str(index)+'.bmp')
+        im.save('../images/predicted_data/test_'+str(index)+'.bmp')
         
         return True
     
