@@ -27,6 +27,6 @@ Load video into /video. Set a limit value for the amount of images you'd like to
 If you want to import a video files in /video run:
     python vidpredict.py import
 
-If you want to predict based on trained weights:
+If you only want to predict based on trained weights:
     python vidpredict.py predict
 
