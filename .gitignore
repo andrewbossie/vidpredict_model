@@ -1,4 +1,5 @@
 images/
-*/__pychache__/*
+src/__pychache__/
+src/classes/__pychache__/
 saved_models
 video/
