@@ -3,8 +3,8 @@
 
 
 ## Description
-VidPredict uses an LSTM combined with video frames to predict out-of-network 
-video frames. 
+VidPredict combines an LSTM with individual video frames to predict out-of-network 
+images by modelling the temporal change of pixel values over time. 
 
 
 ## Versioning
