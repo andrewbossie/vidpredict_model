@@ -3,17 +3,30 @@ Time Series Image Prediction from Video
 
 
 ## Description
-VidPredict is a machine learning image generation model based on video frames. 
+VidPredict uses an LSTM combined with video frames to predict out-of-network 
+video frames. 
+
 
 ## Versioning
 Assumes python>=3
 
+
 ## Installation
     pip install -r requirements.txt
 
+
 ## Run
-    python main.py noimport
+
+Load video into /video. Set a limit value for the amount of images you'd like to extract from the video.
+
+    python vidpredict.py
+    or
+    python vidpredict.py noimport
+
 
 If you want to import a video files in /video run:
-    python main.py import
+    python vidpredict.py import
+
+If you want to predict based on trained weights:
+    python vidpredict.py predict
 
