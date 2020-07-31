@@ -20,7 +20,9 @@ Assumes python>=3
 Load video into /video. Set a limit value for the amount of images you'd like to extract from the video.
 
     python vidpredict.py
+    
 or
+    
     python vidpredict.py noimport
 
 
