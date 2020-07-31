@@ -27,5 +27,7 @@ args:
     predict - predict based on trained weights
 
 ## TODO
-Add support for AWS s3
+- Add support for AWS s3
+- Metrics
+- Visualizations
 
