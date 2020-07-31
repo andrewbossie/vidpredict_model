@@ -33,10 +33,10 @@ def VidPredict(do_import=True):
     # import all files from S3
     
 
+    index = 0
+    
     # For files in in /video
     for filename in os.listdir('../video'):
-        
-        index = 0
         
         importer = Image()
         
