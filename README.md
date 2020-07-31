@@ -1,5 +1,5 @@
 # VidPredict
-Time Series Image Prediction from Video
+
 
 
 ## Description
