@@ -14,8 +14,8 @@ import os
 #  The main class for image importing and data extaction
 class Image(object):
     
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self):
+        # self.filename = filename
         
         # Dimensions
         self.x = 480
@@ -24,9 +24,9 @@ class Image(object):
     # From a video file, extract the individual frames
     # Save to images/raw_data
     # Returns True
-    def extractFrames(self, limit):
+    def extractFrames(self, limit, filename):
         
-        video = cv2.VideoCapture(self.filename)
+        video = cv2.VideoCapture(filename)
         success,image = video.read()
         
         index = 0
@@ -78,7 +78,7 @@ class Image(object):
         #-----------------
         # Delete files in raw_data
         #-----------------
-        os.remove(imageName)
+        # os.remove(imageName)
         
         return arr
         
@@ -106,6 +106,10 @@ class Image(object):
     def arrayToImage(self, pixelArray):
         
         im = PIL.Image.fromarray(pixelArray)
+        
+        # Used for greyscale images only 
+        im = im.convert("L")
+        
         im.save('../images/predicted_data/test.bmp')
         
         return True
