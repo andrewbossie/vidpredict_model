@@ -1,4 +1,4 @@
-# Title: imageRNN
+# Title: VidPredict
 # Author: Andrew Bossie
 # Copyright (C) Andrew Bossie - All Rights Reserved
 # Unauthorized copying of this file, via any medium is strictly prohibited

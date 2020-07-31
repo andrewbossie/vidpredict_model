@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Title: imageRNN
+# Title: VidPredict
 # Author: Andrew Bossie
 # Copyright (C) Andrew Bossie - All Rights Reserved
 # Unauthorized copying of this file, via any medium is strictly prohibited
@@ -35,6 +35,8 @@ def VidPredict(do_import=True):
 
     # For files in in /video
     for filename in os.listdir('../video'):
+        
+        index = 0
         
         importer = Image()
         
@@ -107,7 +109,7 @@ def VidPredict(do_import=True):
         # running_total = 0
         # batch_length = 1000
         # restart = True
-        epochs = 20
+        epochs = 200
         
     #-----------------
     # Train
@@ -195,7 +197,8 @@ def VidPredict(do_import=True):
         prediction = rnn.predictRNN(predModel, pred_image_tensor)
         
         # Convert predicted tensor to image and save
-        final_prediction = importer.arrayToImage(prediction.T)
+        final_prediction = importer.arrayToImage(prediction.T, index)
+        index = index + 1
         
         print("Finished. Check /images/predicted_data for predictions.")
         

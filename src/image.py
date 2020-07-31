@@ -1,4 +1,4 @@
-# Title: imageRNN
+# Title: VidPredict
 # Author: Andrew Bossie
 # Copyright (C) Andrew Bossie - All Rights Reserved
 # Unauthorized copying of this file, via any medium is strictly prohibited
@@ -103,14 +103,14 @@ class Image(object):
         
     #  From a pixel array, convert to bmp image and save into
     # images/predicted_data
-    def arrayToImage(self, pixelArray):
+    def arrayToImage(self, pixelArray, index):
         
         im = PIL.Image.fromarray(pixelArray)
         
         # Used for greyscale images only 
         im = im.convert("L")
         
-        im.save('../images/predicted_data/test.bmp')
+        im.save('../images/predicted_data/test_'+str(index)+'.bmp')
         
         return True
     
