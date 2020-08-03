@@ -28,12 +28,14 @@ class RNN(object):
     def __init__(self):
         
         # Are we using GPU? - REQUIRED! -
-        physical_devices = tf.config.list_physical_devices('GPU') 
+        physical_devices = tf.config.list_physical_devices('GPU')
         print("Num GPUs:", len(physical_devices))
         
         if(len(physical_devices) < 1):
             print("No GPU found... Exiting.")
             exit()
+            
+        tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
         
         return None
     
@@ -41,7 +43,8 @@ class RNN(object):
     def buildRNN(self, features, timesteps):
         
         rnn = keras.Sequential()
-        rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps-2, features)))
+        # rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps-2, features)))
+        rnn.add(LSTM(256, return_sequences=True, input_shape=(None, features)))
         rnn.add(Dropout(0.2))
         rnn.add(LSTM(128, return_sequences=True))
         rnn.add(Dropout(0.2))
@@ -59,29 +62,6 @@ class RNN(object):
             
         return rnn
     
-    # Build new prediction neural network
-    def buildPredRNN(self, features, timesteps):
-        
-        rnn = keras.Sequential()
-        rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps, features)))
-        rnn.add(Dropout(0.2))
-        rnn.add(LSTM(128, return_sequences=True))
-        rnn.add(Dropout(0.2))
-        rnn.add(LSTM(56))
-        rnn.add(Dense(features, activation='relu'))
-        
-        # If model already exists
-        if path.exists('../saved_models/trained.hdf5'):
-            print('Existing model found, loading...')
-
-            # Restore the weights
-            rnn.load_weights('../saved_models/trained.hdf5')
-            print('Done.')
-        else:
-            rint("Weights not present! Exiting.")
-            
-        return rnn
-    
     # Train Function
     def trainRNN(self, model, epochs, train_x, train_y):
         
@@ -92,7 +72,7 @@ class RNN(object):
                                                                   mode='auto', 
                                                                   save_freq=2)
         
-        model.compile(loss='mae', optimizer='adam', metrics=['acc'])
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc', 'categorical_crossentropy'])
         trained_rnn = model.fit(train_x, train_y, epochs=epochs,callbacks=[save_callback])
             
         return trained_rnn

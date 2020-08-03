@@ -44,7 +44,7 @@ def VidPredict(do_import=True):
             print("Importing video file...")
             
             # Grab individual frames from video (limit 0 = all frames)
-            importer.extractFrames(100, '../video/' + filename) 
+            importer.extractFrames(0, '../video/' + filename) 
             print("Done.")   
         
     # ----------------------------------
@@ -184,17 +184,14 @@ def VidPredict(do_import=True):
         print("imageTensor Shape: {}".format(np.asarray(pred_image_tensor).shape))
         print("imageTensor Memory Taken: {} Mb".format(pred_image_tensor.nbytes / 1000000))
         print("Done.")
-                
-        # Build prediction rnn
-        # timesteps = 1
-        # features = pred_image_tensor[2]
-        predModel = rnn.buildPredRNN(pred_image_tensor.shape[1], 1)
-        predModel.summary()
         
         pred_image_tensor = pred_image_tensor.reshape((pred_image_tensor.shape[0], 1, pred_image_tensor.shape[1]))
         
         # Predict
-        prediction = rnn.predictRNN(predModel, pred_image_tensor)
+        prediction = rnn.predictRNN(model, pred_image_tensor)
+        
+        # Dump prediction tensor to file
+        pd.DataFrame(prediction).to_csv('../images/predicted_data/pred_tensor.txt', index=False)
         
         # Convert predicted tensor to image and save
         final_prediction = importer.arrayToImage(prediction.T, index)
@@ -233,6 +230,10 @@ def OneTimePredict(do_import=True):
     
     # Predict
     prediction = rnn.predictRNN(predModel, pred_image_tensor)
+    
+    # Dump prediction tensor to file
+    prediction.to_csv('../images/predicted_data/pred_tensor.txt', index=False)
+    exit()
     
     # Convert predicted tensor to image and save
     final_prediction = importer.arrayToImage(prediction.T)
