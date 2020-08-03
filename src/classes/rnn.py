@@ -50,7 +50,7 @@ class RNN(object):
         rnn.add(Dropout(0.2))
         rnn.add(LSTM(56))
         rnn.add(Dropout(0.2))
-        rnn.add(Dense(features, activation='relu'))
+        rnn.add(Dense(features, activation='softmax'))
         
         # If model already exists
         if path.exists('../../saved_models/trained.hdf5'):
@@ -73,6 +73,7 @@ class RNN(object):
                                                                   save_freq=2)
         
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc', 'categorical_crossentropy'])
+        # model.compile(loss='mse', optimizer='adam', metrics=['acc'])
         trained_rnn = model.fit(train_x, train_y, epochs=epochs,callbacks=[save_callback])
             
         return trained_rnn
@@ -87,9 +88,9 @@ class RNN(object):
     # Predict Function
     def predictRNN(self, model, frame):
         
-        y_hat = model.predict(frame)
+        y_hat = model.predict(x=frame, verbose=1)
         
-        del model
+        # del model
             
         return y_hat
     

@@ -19,8 +19,8 @@ import gc
 import time
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OneHotEncoder
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.preprocessing import OneHotEncoder
 import boto3
 
 # Program starts here
@@ -134,26 +134,26 @@ def VidPredict(do_import=True):
         
         
     #-----------------
-    # Test
+    # Test (Unused)
     #-----------------
 
         method = 'Test'
         epochs = 1
         
         # Split image tensor into train tensor
-        train_tensor = imageTensor[split+1:, :, :]
-        train_start = time.perf_counter()
+        # train_tensor = imageTensor[split+1:, :, :]
+        # train_start = time.perf_counter()
         
         # Training via new method
-        training_average = rnn.train_test_loop_new(model, 
-                                            importer, 
-                                            train_tensor,
-                                            method,
-                                            epochs)
+        # training_average = rnn.train_test_loop_new(model, 
+                                            # importer, 
+                                            # train_tensor,
+                                            # method,
+                                            # epochs)
         
         print("Training Complete.")
         train_end = time.perf_counter()
-        print("Model trained in {:.2f} seconds.".format(train_end - train_start))
+        # print("Model trained in {:.2f} seconds.".format(train_end - train_start))
         
     #-----------------
     # Testing Metrics (Maybe)
@@ -191,7 +191,7 @@ def VidPredict(do_import=True):
         prediction = rnn.predictRNN(model, pred_image_tensor)
         
         # Dump prediction tensor to file
-        pd.DataFrame(prediction).to_csv('../images/predicted_data/pred_tensor.txt', index=False)
+        pd.DataFrame(prediction).to_csv('../images/predicted_data/pred_tensor.txt', index=True)
         
         # Convert predicted tensor to image and save
         final_prediction = importer.arrayToImage(prediction.T, index)
