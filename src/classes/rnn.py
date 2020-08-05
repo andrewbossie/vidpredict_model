@@ -39,18 +39,18 @@ class RNN(object):
         
         return None
     
-    # Build new neural network
+    # Build new neural network for training and testing
     def buildRNN(self, features, timesteps):
         
         rnn = keras.Sequential()
         # rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps-2, features)))
-        rnn.add(LSTM(256, return_sequences=True, input_shape=(None, features)))
+        rnn.add(LSTM(256, return_sequences=True, input_shape=(None, 1)))
         rnn.add(Dropout(0.2))
         rnn.add(LSTM(128, return_sequences=True))
         rnn.add(Dropout(0.2))
         rnn.add(LSTM(56))
         rnn.add(Dropout(0.2))
-        rnn.add(Dense(features, activation='softmax'))
+        rnn.add(Dense(257, activation='softmax'))
         
         # If model already exists
         if path.exists('../../saved_models/trained.hdf5'):
@@ -61,6 +61,29 @@ class RNN(object):
             print('Done.')
             
         return rnn
+    
+    # Build new neural network for prediction
+    # def buildPredRNN(self, features, timesteps):
+        
+    #     rnn = keras.Sequential()
+    #     # rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps-2, features)))
+    #     rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps, features)))
+    #     rnn.add(Dropout(0.2))
+    #     rnn.add(LSTM(128, return_sequences=True))
+    #     rnn.add(Dropout(0.2))
+    #     rnn.add(LSTM(56))
+    #     rnn.add(Dropout(0.2))
+    #     rnn.add(Dense(features, activation='softmax'))
+        
+    #     # If model already exists
+    #     if path.exists('../../saved_models/trained.hdf5'):
+    #         print('Existing model found, loading...')
+
+    #         # Restore the weights
+    #         rnn.load_weights('../../saved_models/trained.hdf5')
+    #         print('Done.')
+            
+    #     return rnn
     
     # Train Function
     def trainRNN(self, model, epochs, train_x, train_y):
@@ -88,7 +111,10 @@ class RNN(object):
     # Predict Function
     def predictRNN(self, model, frame):
         
-        y_hat = model.predict(x=frame, verbose=1)
+        y_hat = model.predict_classes(x=frame, verbose=1)
+        print(y_hat.shape)
+        pd.DataFrame(y_hat).to_csv('predicted.txt')
+        exit()
         
         # del model
             
@@ -96,7 +122,7 @@ class RNN(object):
     
     
     #------------------
-    # Taining / Testing loop. NEW, all timesteps
+    # Taining / Testing loop. All timesteps, whole image
     # Batch Size: tensor.shape[0]
     #-----------------
     def train_test_loop_new(self, model, importer, tensor, method, epochs):
@@ -115,93 +141,50 @@ class RNN(object):
     
     
     #------------------
-    # Taining / Testing loop. Recursive with "pixel strings"
+    # Taining / Testing loop with "pixel strings"
     # Grabs batch_length pixel strings at a time and trains on them
     # Loop over tensor[i]'s xy-coordinates and
     # extract pixel strings from tensor
     # Feed into RNN for each xy
     # Batch Size: 1
     #-----------------
-    def train_test_loop_pixel_string(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
+    def train_test_loop_pixel_string(self, model, tensor, importer, x, y, split, running_total, num_loops, restart, method, epochs):
         
-        # If we have iterated across x-axis (tensor.shape[0] - 1)
-        if x == tensor.shape[0] - 2:
-            final_average = (running_total / num_loops) * 100
-            return final_average
-        
-        tmp_x_batch = []
-        tmp_y_batch = []
+        for x in range(tensor.shape[0]):
+            for y in range(tensor.shape[1]):
+                    
+                print("x value: {}".format(x))
+                print("y value: {}".format(y))
+                                
+                # pixel "string" & scale
+                print("{}ing on coordinates: ({}, {})".format(method, x,y))
+                pixel_string = importer.extractPixelStrings(tensor, x, y)
 
-        for i in range(y, y + batch_length):
-            
-            # If we have iterated across the y-axis - split
-            if i == tensor.shape[1] - 2:
-                x = x + 1
-                # reset index
-                i &= 0
-                y = 0
-                restart = True
-                break
-            
-            else:
-                y = i
-                
-            print("i value: {}".format(i))
-            print("y value: {}".format(y))
-            print("x value: {}".format(x))
-                            
-            # pixel "string" & scale
-            print("{}ing on coordinates: ({}, {})".format(method, x,y))
-            pixel_string = importer.extractPixelStrings(tensor, x, y)
-            
-            # Find length of pixel string for pair pixels
-            modulo = len(pixel_string) % 2
-            max_len = len(pixel_string) - modulo
-            max_len = max_len - 1
-            
-            for k in range(max_len):
-            
-                x_train = pixel_string[k]
-                y_train = pixel_string[k+1]
-                print("K value: {}".format(k))
-                print("K+1 value: {}".format(k+1))
-                print("x_train value: {}".format(x_train))
-                print("y_train value: {}".format(y_train))
-                                    
+                x_train = np.array(pixel_string[:-1])
+                y_train = np.array(pixel_string[-1])
+                                        
                 # One-hot everyone
                 encoded_y = self.encode(y_train)
-                
-                x_train = x_train.reshape(1,1,1)
-                encoded_y = np.array(encoded_y).reshape(-1 ,len(encoded_y))
-                print("Expected output: {}".format(y_train))
-                
-                # tmp_x_batch.append(x_train)
-                # tmp_y_batch.append(encoded_y)
+                # encoded_y = y_train
                     
-                # Train / test and loop back
-                epochs = 1
-                # tmp_x_batch = np.array(tmp_x_batch)
-                # tmp_y_batch = np.array(tmp_y_batch)
-                
+                # Reshape training sequences for NN fit
+                x_train = x_train.reshape(x_train.shape[0],1,1)
+                x_train = np.swapaxes(x_train, 0, 1)
+                encoded_y = np.array(encoded_y).reshape(1, len(encoded_y))
+                    
                 if method == 'Train':
                     trained = self.trainRNN(model, epochs, x_train, encoded_y)
-                else:
-                    tested = self.testRNN(model, epochs, tmp_x_batch, tmp_y_batch)
-                    
-                k = k + 2
-                
-        del tmp_x_batch
-        del tmp_y_batch
-        num_loops = num_loops + 1
-        running_total = running_total + trained.history['acc'][0]
-        return self.train_test_loop(model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method)
+                # else:
+                #     tested = self.testRNN(model, epochs, tmp_x_batch, tmp_y_batch)
+
+        return trained.history
     
     
     #------------------
     # Taining / Testing loop. OLD, one timestep at a time, per frame
     # Batch Size: tensor.shape[0]
     #-----------------
-    def train_test_loop_old(self, model, importer, tensor, x, y, split, running_total, num_loops, batch_length, restart, method):
+    def train_test_loop_old(self, model, tensor, method):
         
         
         for i in range(tensor.shape[2] - 2):        

@@ -10,7 +10,6 @@
 from classes.image import Image
 from classes.rnn import RNN
 from classes.visualizer import Visualizer
-# from bayes import Bayes
 
 import os
 import sys
@@ -19,12 +18,17 @@ import gc
 import time
 import numpy as np
 import pandas as pd
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import Normalizer
+from sklearn.preprocessing import OneHotEncoder
 import boto3
+# import seaborn as sb
 
 # Program starts here
 def VidPredict(do_import=True):
+    
+    rnn = RNN()
+    normalizer = Normalizer()
+    importer = Image()
     
 #----------------------------------
 # Video import and image extraction
@@ -37,8 +41,6 @@ def VidPredict(do_import=True):
     
     # For files in in /video
     for filename in os.listdir('../video'):
-        
-        importer = Image()
         
         if(do_import == True):
             print("Importing video file...")
@@ -78,7 +80,7 @@ def VidPredict(do_import=True):
         # Reshape tensor to have shape (samples, timesteps, features) OR (640, timesteps, 480)
         print("Before formatting: {}".format(np.asarray(imageTensor).shape))
         imageTensor = np.asarray(imageTensor).T
-        imageTensor = np.swapaxes(np.asarray(imageTensor),2,1)
+        # imageTensor = np.swapaxes(np.asarray(imageTensor),2,1)
         print("imageTensor Shape: {}".format(np.asarray(imageTensor).shape))
         print("imageTensor Memory Taken: {} Mb".format(imageTensor.nbytes / 1000000))
         print("Done.")
@@ -96,19 +98,17 @@ def VidPredict(do_import=True):
         # Input Dim: imageTensor.shape[0] : imageTensor.shape[0] x imageTensor.shape[2] (samples:features:timesteps)
         # Output Dim: (480 x 640 x 1)
         # Output value: descrete scalar value 0 <  < 255
-        rnn = RNN()
         model = rnn.buildRNN(imageTensor.shape[2], imageTensor.shape[1])
         model.summary()
         
         print("Done.")
         print("Starting main training loop...")
 
-        # x = 0
-        # y = 0
-        # num_loops = 0
-        # running_total = 0
-        # batch_length = 1000
-        # restart = True
+        x = 0
+        y = 0
+        num_loops = 0
+        running_total = 0
+        restart = True
         epochs = 1
         
     #-----------------
@@ -122,11 +122,17 @@ def VidPredict(do_import=True):
         train_start = time.perf_counter()
         
         # Training via new method
-        training_average = rnn.train_test_loop_new(model, 
-                                            importer, 
-                                            train_tensor,
-                                            method,
-                                            epochs)
+        training_average = rnn.train_test_loop_pixel_string(model,
+                                                            train_tensor,
+                                                            importer, 
+                                                            x, 
+                                                            y, 
+                                                            split, 
+                                                            running_total, 
+                                                            num_loops,
+                                                            restart, 
+                                                            method,
+                                                            epochs)
         
         print("Training Complete.")
         train_end = time.perf_counter()
@@ -141,19 +147,27 @@ def VidPredict(do_import=True):
         epochs = 1
         
         # Split image tensor into train tensor
-        # train_tensor = imageTensor[split+1:, :, :]
-        # train_start = time.perf_counter()
+        test_tensor = imageTensor[split+1:, :, :]
+        test_start = time.perf_counter()
         
-        # Training via new method
-        # training_average = rnn.train_test_loop_new(model, 
-                                            # importer, 
-                                            # train_tensor,
-                                            # method,
-                                            # epochs)
+        # Testing via new method
+        testing_average = rnn.train_test_loop_pixel_string(model,
+                                                            test_tensor,
+                                                            importer, 
+                                                            x, 
+                                                            y, 
+                                                            split, 
+                                                            running_total, 
+                                                            num_loops,
+                                                            restart, 
+                                                            method,
+                                                            epochs,
+                                                            normalizer)
+        
         
         print("Training Complete.")
-        train_end = time.perf_counter()
-        # print("Model trained in {:.2f} seconds.".format(train_end - train_start))
+        test_end = time.perf_counter()
+        print("Model trained in {:.2f} seconds.".format(test_end - test_start))
         
     #-----------------
     # Testing Metrics (Maybe)
@@ -181,14 +195,24 @@ def VidPredict(do_import=True):
         print("Before formatting: {}".format(np.asarray(pred_image_tensor).shape))
         pred_image_tensor = np.asarray(pred_image_tensor).T
         # test_image_tensor = np.swapaxes(np.asarray(pred_image_tensor),1,0)
-        print("imageTensor Shape: {}".format(np.asarray(pred_image_tensor).shape))
-        print("imageTensor Memory Taken: {} Mb".format(pred_image_tensor.nbytes / 1000000))
+        print("Prediction imageTensor Shape: {}".format(np.asarray(pred_image_tensor).shape))
+        print("Prediction imageTensor Memory Taken: {} Mb".format(pred_image_tensor.nbytes / 1000000))
         print("Done.")
         
+        # Build prediction rnn
+        # timesteps = 1
+        # features = pred_image_tensor[2]
+        # predModel = rnn.buildPredRNN(pred_image_tensor.shape[1], 1)
+        # predModel.summary()
+        
         pred_image_tensor = pred_image_tensor.reshape((pred_image_tensor.shape[0], 1, pred_image_tensor.shape[1]))
+        print(pred_image_tensor.shape)
+        # pd.DataFrame(pred_image_tensor).to_csv('before_preditcion.txt', index=True)
+        # exit()
         
         # Predict
-        prediction = rnn.predictRNN(model, pred_image_tensor)
+        # prediction = rnn.predictRNN(predModel, pred_image_tensor)
+        prediction = rnn.predictRNN(model, pred_image_tensor,normalizer)
         
         # Dump prediction tensor to file
         pd.DataFrame(prediction).to_csv('../images/predicted_data/pred_tensor.txt', index=True)
@@ -198,6 +222,8 @@ def VidPredict(do_import=True):
         index = index + 1
         
         print("Finished. Check /images/predicted_data for predictions.")
+        
+        exit()
         
 # One-off prediction based on already trained weights
 def OneTimePredict(do_import=True):
