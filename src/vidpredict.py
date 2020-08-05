@@ -122,7 +122,7 @@ def VidPredict(do_import=True):
         train_start = time.perf_counter()
         
         # Training via new method
-        training_average = rnn.train_test_loop_pixel_string(model,
+        training_average = rnn.train_test_predict_loop_pixel_string(model,
                                                             train_tensor,
                                                             importer, 
                                                             x, 
@@ -151,7 +151,7 @@ def VidPredict(do_import=True):
         test_start = time.perf_counter()
         
         # Testing via new method
-        testing_average = rnn.train_test_loop_pixel_string(model,
+        testing_average = rnn.train_test_predict_loop_pixel_string(model,
                                                             test_tensor,
                                                             importer, 
                                                             x, 
@@ -199,20 +199,36 @@ def VidPredict(do_import=True):
         print("Prediction imageTensor Memory Taken: {} Mb".format(pred_image_tensor.nbytes / 1000000))
         print("Done.")
         
-        # Build prediction rnn
-        # timesteps = 1
-        # features = pred_image_tensor[2]
-        # predModel = rnn.buildPredRNN(pred_image_tensor.shape[1], 1)
-        # predModel.summary()
-        
         pred_image_tensor = pred_image_tensor.reshape((pred_image_tensor.shape[0], 1, pred_image_tensor.shape[1]))
         print(pred_image_tensor.shape)
         # pd.DataFrame(pred_image_tensor).to_csv('before_preditcion.txt', index=True)
         # exit()
         
         # Predict
-        # prediction = rnn.predictRNN(predModel, pred_image_tensor)
-        prediction = rnn.predictRNN(model, pred_image_tensor,normalizer)
+        method = 'Predict'
+        
+        # Split image tensor into train tensor
+        pred_image_tensor = pred_image_tensor[split+1:, :, :]
+        predict_start = time.perf_counter()
+        
+        # Testing via new method
+        testing_average = rnn.train_test_predict_loop_pixel_string(model,
+                                                            pred_image_tensor,
+                                                            importer, 
+                                                            x, 
+                                                            y, 
+                                                            split, 
+                                                            running_total, 
+                                                            num_loops,
+                                                            restart, 
+                                                            method,
+                                                            epochs,
+                                                            normalizer)
+        
+        
+        print("Training Complete.")
+        test_end = time.perf_counter()
+        print("Model trained in {:.2f} seconds.".format(test_end - test_start))
         
         # Dump prediction tensor to file
         pd.DataFrame(prediction).to_csv('../images/predicted_data/pred_tensor.txt', index=True)
