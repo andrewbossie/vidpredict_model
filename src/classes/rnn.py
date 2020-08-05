@@ -147,7 +147,7 @@ class RNN(object):
                 y_batch = np.array(pixel_string[-1])
                                         
                 # One-hot labels
-                encoded_y = self.encode(y_train)
+                encoded_y = self.encode(y_batch)
                 # encoded_y = y_batch
                     
                 # Reshape training sequences for LSTM fit
