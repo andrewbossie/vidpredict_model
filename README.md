@@ -17,6 +17,8 @@ Load video into /video.
 
     python vidpredict.py
 
+Upload test image to /images/test_images
+
 Prediction images will be generated in /images/predicted_data
 
     
