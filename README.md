@@ -13,9 +13,11 @@ Assumes python >= 3
 
 ## Run
 
-Load video into /video. Set a limit value for the amount of images you'd like to extract from the video.
+Load video into /video.
 
     python vidpredict.py
+
+Prediction images will be generated in /images/predicted_data
 
     
 args: 
