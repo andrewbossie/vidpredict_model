@@ -39,7 +39,12 @@ Prediction images will be generated in
 
     predict - quick predict based on trained weights
 
+## Known Issues
+
+- Slow training due to CPU bottleneck related to data loading
+
 ## TODO
+- Streaming
 - Add support for AWS s3
 - Metrics
 - Visualizations
