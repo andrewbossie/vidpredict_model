@@ -9,17 +9,24 @@ images by modelling the temporal change of pixel values over time.
 Assumes python >= 3
 
 ## Installation
+
     pip install -r requirements.txt
+
+## Setup
+
+Upload test image to 
+
+    /images/test_images
+
+Prediction images will be generated in 
+
+    /images/predicted_data
 
 ## Run
 
-Load video into /video.
+Load your own training videos into /video.
 
     python vidpredict.py
-
-Upload test image to /images/test_images
-
-Prediction images will be generated in /images/predicted_data
 
     
 args: 
@@ -28,7 +35,7 @@ args:
 
     import - Import video data from /video
 
-    predict - predict based on trained weights
+    predict - quick predict based on trained weights
 
 ## TODO
 - Add support for AWS s3
