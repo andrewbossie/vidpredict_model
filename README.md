@@ -7,6 +7,8 @@ images by modelling the temporal change of pixel values over time.
 
 ## Installation
 
+Clone repository into desired location.
+
     pip install -r requirements.txt
 
 * Assumes python >= 3
