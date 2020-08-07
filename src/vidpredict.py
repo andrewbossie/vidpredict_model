@@ -46,7 +46,7 @@ def VidPredict(do_import=True):
             print("Importing video file...")
             
             # Grab individual frames from video (limit 0 = all frames)
-            importer.extractFrames(0, '../video/' + filename) 
+            importer.extractFrames(10, '../video/' + filename) 
             print("Done.")   
         
     # ----------------------------------
