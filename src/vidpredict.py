@@ -62,7 +62,8 @@ def VidPredict(do_import=True):
         # Explicitely sort filenames. 
         # This is important to keep temporal aspect of data
         for filename in os.listdir('../images/raw_data'):
-            sorted_keys.append(int(filename.split('.')[0]))
+            if filename.split('.')[0] != 'README':
+                sorted_keys.append(int(filename.split('.')[0]))
             
         sorted_keys.sort()
 
