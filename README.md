@@ -5,12 +5,11 @@
 VidPredict combines an LSTM with individual video frames to predict out-of-network 
 images by modelling the temporal change of pixel values over time. 
 
-## Versioning
-Assumes python >= 3
-
 ## Installation
 
     pip install -r requirements.txt
+
+* Assumes python >= 3
 
 ## Setup
 
