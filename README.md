@@ -14,6 +14,10 @@ Assumes python >= 3
 
 ## Setup
 
+Load your own training videos into 
+
+    /video
+
 Upload test image to 
 
     /images/test_images
@@ -23,8 +27,6 @@ Prediction images will be generated in
     /images/predicted_data
 
 ## Run
-
-Load your own training videos into /video.
 
     python vidpredict.py
 
