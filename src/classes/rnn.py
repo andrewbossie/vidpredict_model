@@ -44,12 +44,12 @@ class RNN(object):
         
         rnn = keras.Sequential()
         # rnn.add(LSTM(256, return_sequences=True, input_shape=(timesteps-2, features)))
-        rnn.add(LSTM(256, return_sequences=True, input_shape=(None, 1)))
+        rnn.add(LSTM(128, return_sequences=True, input_shape=(None, 1)))
         rnn.add(Dropout(0.2))
-        rnn.add(LSTM(128, return_sequences=True))
-        rnn.add(Dropout(0.2))
-        rnn.add(LSTM(56))
-        rnn.add(Dropout(0.2))
+        # rnn.add(LSTM(10))
+        # rnn.add(Dropout(0.2))
+        # rnn.add(LSTM(56))
+        # rnn.add(Dropout(0.2))
         rnn.add(Dense(257, activation='softmax'))
         
         # If model already exists
@@ -96,8 +96,7 @@ class RNN(object):
                                                                   save_freq=2)
         
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc', 'categorical_crossentropy'])
-        # model.compile(loss='mse', optimizer='adam', metrics=['acc'])
-        trained_rnn = model.fit(train_x, train_y, epochs=epochs,callbacks=[save_callback])
+        trained_rnn = model.fit(train_x, train_y, epochs=epochs,callbacks=[save_callback], use_multiprocessing=True, workers=2)
             
         return trained_rnn
     
@@ -141,7 +140,11 @@ class RNN(object):
                                 
                 # pixel "string" & scale
                 print("{}ing on coordinates: ({}, {})".format(method, x,y))
-                pixel_string = importer.extractPixelStrings(tensor, x, y)
+                # pixel_string = importer.extractPixelStrings(tensor, x, y) # Bottleneck here
+                pixel_string = tensor[x,y,:]
+                print(pixel_string)
+                
+                # ToDo: batching
 
                 x_batch = np.array(pixel_string[:-1])
                 y_batch = np.array(pixel_string[-1])
@@ -153,6 +156,9 @@ class RNN(object):
                 # Reshape training sequences for LSTM fit
                 x_batch = x_batch.reshape(x_batch.shape[0],1,1)
                 x_batch = np.swapaxes(x_batch, 0, 1)
+                # print(x_batch.shape)
+                # print(x_batch)
+                # exit()
                 encoded_y = np.array(encoded_y).reshape(1, len(encoded_y))
                     
                 if method == 'Train':
