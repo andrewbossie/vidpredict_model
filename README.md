@@ -31,7 +31,7 @@ Prediction images will be generated in
     python vidpredict.py
 
     
-args: 
+### args: 
 
     noimport - Do not import any video data
 
