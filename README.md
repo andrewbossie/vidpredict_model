@@ -1,5 +1,4 @@
 # VidPredict
-<br>
 
 ## Description
 VidPredict combines an LSTM with individual video frames to predict out-of-network 
