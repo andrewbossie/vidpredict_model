@@ -21,7 +21,7 @@ pandocfilters==1.4.2
 path==13.1.0
 pickleshare==0.7.5
 Pillow==7.0.0
-py==1.8.1
+py==1.10.0
 s3transfer==0.3.3
 scikit-image==0.16.2
 scikit-learn==0.22.1
